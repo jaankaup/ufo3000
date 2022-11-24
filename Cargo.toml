@@ -1,0 +1,16 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "ufo3000_core",
+    "binaries",
+    "run_wasm",
+]
+
+[profile.dev]
+opt-level = 1
+debug = false
+
+[profile.release]
+opt-level = 1
+debug = false
