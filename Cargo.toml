@@ -14,6 +14,10 @@ authors = ["jaankaup <janne.kauppinen4321@gmail.fi>"]
 repository = "https://github.com/jaankaup/ufo3000"
 exclude = []
 
+[workspace.dependencies.ufo3000]
+package = "ufo3000_core"
+path = "./ufo3000_core"
+
 [workspace.dependencies]
 wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="82e9dcf8f777db6e1b30731c7b3288cae2b4c64d" }
 winit = { version = "0.27" }

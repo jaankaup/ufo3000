@@ -7,6 +7,9 @@ description = "The Core"
 repository.workspace = true
 license.workspace = true
 
+[dependencies.ufo3000]
+workspace = true
+
 [dependencies]
 log.workspace = true
 simple_logger.workspace = true

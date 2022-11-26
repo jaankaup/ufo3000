@@ -124,11 +124,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "ufo3000-core"
+name = "ufo3000-examples"
 version = "0.1.0"
+dependencies = [
+ "log",
+ "simple_logger",
+ "ufo3000_core",
+]
 
 [[package]]
-name = "ufo3000-examples"
+name = "ufo3000_core"
 version = "0.1.0"
 dependencies = [
  "log",

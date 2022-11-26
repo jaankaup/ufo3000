@@ -213,23 +213,22 @@ impl Loop for BasicLoop {
     }
 }
 
-
 /// Initializes wgpu-rs system. TODO: finish the Result<...>.
 pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'static str> {
 
     let title = title.to_owned();
     // env_logger::init();
 
-    #[cfg(not(target_arch = "wasm32"))]
-    {
-        SimpleLogger::new()
-        .with_level(LevelFilter::Off)
-        .with_module_level("ufo3000_core", LevelFilter::Info)
-        .with_module_level("input", LevelFilter::Info)
-        .with_utc_timestamps()
-        .init()
-        .unwrap();
-    }
+    // #[cfg(not(target_arch = "wasm32"))]
+    // {
+    //     SimpleLogger::new()
+    //     .with_level(LevelFilter::Off)
+    //     .with_module_level("ufo3000_core", LevelFilter::Info)
+    //     .with_module_level("input", LevelFilter::Info)
+    //     .with_utc_timestamps()
+    //     .init()
+    //     .unwrap();
+    // }
 
     let event_loop = EventLoop::new();
     let mut builder = winit::window::WindowBuilder::new();

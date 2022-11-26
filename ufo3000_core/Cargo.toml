@@ -1,10 +1,14 @@
 [package]
-name = "ufo3000-core"
+name = "ufo3000_core"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
 description = "The Core"
 repository.workspace = true
 license.workspace = true
+
+[dependencies]
+log.workspace = true
+simple_logger.workspace = true
 
 [lib]
