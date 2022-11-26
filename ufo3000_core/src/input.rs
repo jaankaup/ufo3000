@@ -52,7 +52,7 @@ impl InputState {
                 }
             }
             ev::ElementState::Released => {
-                match std::mem::replace(self, InputState::Pressed(666)) {
+                match std::mem::replace(self, InputState::Pressed(777)) {
                     InputState::Pressed(start_time) => {
                         // #[cfg(feature = "input_debug")]
                         // {

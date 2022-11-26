@@ -31,7 +31,6 @@ pub trait Application: Sized + 'static {
     fn render(&mut self,
               device: &wgpu::Device,
               queue: &mut wgpu::Queue,
-              //swap_chain: &mut wgpu::SwapChain,
               surface: &wgpu::Surface,
               sc_desc: &wgpu::SurfaceConfiguration,
               #[cfg(target_arch = "wasm32")]
@@ -46,6 +45,9 @@ pub trait Application: Sized + 'static {
 
     /// A function for updating the state of the application.
     fn update(&mut self, device: &wgpu::Device, queue: &wgpu::Queue, input: &InputCache, spawner: &Spawner);
+
+    /// A function for program exit event.
+    fn exit(&mut self, device: &wgpu::Device, queue: &wgpu::Queue, input: &InputCache, spawner: &Spawner);
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -78,7 +80,6 @@ pub struct WGPUConfiguration {
     pub sc_desc: wgpu::SurfaceConfiguration,
     #[cfg(target_arch = "wasm32")]
     pub offscreen_canvas_setup: OffscreenCanvasSetup,
-    //pub offscreen_canvas_setup: Option<OffscreenCanvasSetup>
 }
 
 /// A trait to configure wgpu-rs engine.
@@ -90,11 +91,7 @@ pub trait WGPUFeatures: Sized + 'static {
         wgpu::Features::empty()
     }
     fn required_limits() -> wgpu::Limits {
-        // wgpu::Limits::downlevel_webgl2_defaults() // These downlevel limits will allow the code to run on all possible hardware
-        let limits = wgpu::Limits::default();
-        //let mut limits = wgpu::Limits::default();
-        //limits.max_storage_buffers_per_pipeline_layout = 8; // TODO: add this to example projects.
-        limits
+        wgpu::Limits::default()
     }
     fn required_downlevel_capabilities() -> wgpu::DownlevelCapabilities {
         wgpu::DownlevelCapabilities {
@@ -126,7 +123,6 @@ impl Loop for BasicLoop {
         mut sc_desc,
         #[cfg(target_arch = "wasm32")]
         offscreen_canvas_setup
-        //adapter_limits
         }: WGPUConfiguration,) {
 
     let spawner = Spawner::new();
@@ -165,12 +161,11 @@ impl Loop for BasicLoop {
             // }
 
             Event::LoopDestroyed => {
-                // TODO: call clean up code. 
+                application.exit(&device, &queue, &input, &spawner);
             }
 
             // TODO: check if pre_update and update are conficting in some circumstances.
             Event::MainEventsCleared => {
-                //log::info!("MainEventsCleared....");
                 application.input(&queue, &input);
                 application.update(&device, &queue, &input, &spawner);
                 input.pre_update();
@@ -179,7 +174,6 @@ impl Loop for BasicLoop {
             Event::RedrawEventsCleared => {
                 #[cfg(not(target_arch = "wasm32"))]
                 {
-                    //pool.run_until_stalled();
                     spawner.run_until_stalled();
                 }
 
@@ -201,7 +195,6 @@ impl Loop for BasicLoop {
                         application.resize(&device, &sc_desc, size);
                     }
                     WindowEvent::CloseRequested => {
-                        // TODO: application.close()
                         *control_flow = ControlFlow::Exit
                     }
                     _ => {}
@@ -209,10 +202,10 @@ impl Loop for BasicLoop {
             }
             Event::RedrawRequested(_) => {
                 #[cfg(not(target_arch = "wasm32"))]
-                application.render(&device, &mut queue /* &mut swap_chain */, &surface, &sc_desc, &spawner);
+                application.render(&device, &mut queue, &surface, &sc_desc, &spawner);
 
                 #[cfg(target_arch = "wasm32")]
-                application.render(&device, &mut queue /* &mut swap_chain */, &surface, &sc_desc, &offscreen_canvas_setup, &spawner);
+                application.render(&device, &mut queue, &surface, &sc_desc, &offscreen_canvas_setup, &spawner);
             }
             _ => { } // Any other events
         } // match event
