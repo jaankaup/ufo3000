@@ -2,12 +2,12 @@
 resolver = "2"
 members = [
     "ufo3000_core",
-}
+]
 
 [workspace.package]
 edition = "2021"
 rust-version = "1.65"
-license = [MIT OR Apache-2.0]
+license = "MIT OR Apache-2.0"
 version = "0.1.0"
 authors = ["jaankaup <janne.kauppinen4321@gmail.fi>"]
 repository = "https://github.com/jaankaup/ufo3000"
@@ -17,3 +17,16 @@ exclude = []
 wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="82e9dcf8f777db6e1b30731c7b3288cae2b4c64d" }
 winit = { version = "0.27" }
 bytemuck = { version = "1.4", features = ["derive"] }
+log = "0.4"
+simple_logger = "1.16.0"
+instant = {version = "0.1.12", features = ["wasm-bindgen"]}
+
+# wasm dependencies
+getrandom = { version = "0.2.7", features = ["js"] }
+web-sys = "0.3.60"
+js-sys = "0.3.60"
+wasm-bindgen = "0.2.83"
+wasm-bindgen-futures = "0.4.33"
+wasm-timer = "0.2.5"
+console_error_panic_hook = "0.1.6"
+console_log = "0.1.2"
