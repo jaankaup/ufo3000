@@ -224,14 +224,8 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
     {
         SimpleLogger::new()
         .with_level(LevelFilter::Off)
-        .with_module_level("jaankaup_core", LevelFilter::Info)
-        .with_module_level("basic", LevelFilter::Info)
-        .with_module_level("curves", LevelFilter::Info)
-        .with_module_level("fmm", LevelFilter::Info)
-        .with_module_level("mc_terrain", LevelFilter::Info)
-        .with_module_level("fast_marching_method", LevelFilter::Info)
-        //.with_target_levels(HashMap::from([("basic.rs".to_string(), LevelFilter::Info)]))
-        //.with_module_level("wgpu", LevelFilter::Info)
+        .with_module_level("ufo3000_core", LevelFilter::Info)
+        .with_module_level("input", LevelFilter::Info)
         .with_utc_timestamps()
         .init()
         .unwrap();
@@ -251,12 +245,6 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
     #[cfg(target_arch = "wasm32")]
     {
         use winit::platform::web::WindowExtWebSys;
-        //let query_string = web_sys::window().unwrap().location().search().unwrap();
-        //let level: log::Level = parse_url_query_string(&query_string, "RUST_LOG")
-        //    .map(|x| x.parse().ok())
-        //    .flatten()
-        //    .unwrap_or(log::Level::Error);
-        // console_log::init_with_level(level).expect("could not initialize logger");
         console_log::init_with_level(log::Level::Trace).expect("could not initialize logger");
         std::panic::set_hook(Box::new(console_error_panic_hook::hook));
         // On wasm, append the canvas to the document body
@@ -270,12 +258,6 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
             .expect("couldn't append canvas to document body");
     }
 
-    log::info!("Initializing the surface...");
-
-    log::info!("Creating offscreen canvas...");
-
-    //let mut offscreen_canvas_setup: Option<OffscreenCanvasSetup> = None;
-
     #[cfg(target_arch = "wasm32")]
     let offscreen_canvas = OffscreenCanvas::new(1024, 768).expect("couldn't create OffscreenCanvas");
 
@@ -288,7 +270,6 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
         .dyn_into::<ImageBitmapRenderingContext>()
         .expect("couldn't convert into ImageBitmapRenderingContext");
 
-    //offscreen_canvas_setup = Some(OffscreenCanvasSetup {
     #[cfg(target_arch = "wasm32")]
     let offscreen_canvas_setup = OffscreenCanvasSetup { offscreen_canvas, bitmap_renderer, };
 
@@ -302,7 +283,6 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
             other => panic!("Unknown power preference: {}", other),
         }
     } else {
-        //wgpu::PowerPreference::default()
         wgpu::PowerPreference::HighPerformance
     };
     log::info!("power_preference = {:?}", power_preference);
@@ -316,14 +296,6 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
 
         #[cfg(target_arch = "wasm32")]
         let surface = instance .create_surface_from_offscreen_canvas(&offscreen_canvas_setup.offscreen_canvas);
-        //     if let Some(offscreen_canvas_setup) = &offscreen_canvas_setup {
-        //         log::info!("Creating surface from OffscreenCanvas");
-        //         instance
-        //             .create_surface_from_offscreen_canvas(&offscreen_canvas_setup.offscreen_canvas)
-        //     } else {
-        //         instance.create_surface(&window)
-        //     }
-        // };
 
         (size, surface)
     };
@@ -341,12 +313,7 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
     let optional_features = P::optional_features();
     let required_features = P::required_features();
     let adapter_features = adapter.features();
-    // let adapter_limits = adapter.limits();
-    // log::info!("optional_features == {:?}", optional_features);
-    // log::info!("required_features == {:?}", required_features);
-    // log::info!("adapter_features == {:?}", adapter_features);
-    // log::info!("adapter_limits == {:?}", adapter_limits);
-    // log::info!("(optional_features & adapter_features) | required_features == {:?}", (optional_features & adapter_features) | required_features);
+
     assert!(
         adapter_features.contains(required_features),
         "Adapter does not support required features for this example: {:?}",
@@ -371,7 +338,6 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
     let needed_limits = P::required_limits().using_resolution(adapter.limits());
 
     let trace_dir = std::env::var("WGPU_TRACE");
-    // log::info!("trace_dir == {:?}", trace_dir);
     let (device, queue) = adapter
         .request_device(
             &wgpu::DeviceDescriptor {
@@ -439,12 +405,8 @@ pub fn run_loop<A: Application, L: Loop, F: WGPUFeatures>() {
         log::info!("Creating the application.");
         let lo = L::init();
 
-        ////let setup = setup::<E>(&title).await;
         let start_closure = Closure::once_into_js(move || lo.run(app, configuration));
 
-        // make sure to handle JS exceptions thrown inside start.
-        // Otherwise wasm_bindgen_futures Queue would break and never handle any tasks again.
-        // This is required, because winit uses JS exception for control flow to escape from `run`.
         if let Err(error) = call_catch(&start_closure) {
             let is_control_flow_exception = error.dyn_ref::<js_sys::Error>().map_or(false, |e| {
                     e.message().includes("Using exceptions for control flow", 0)
@@ -500,22 +462,3 @@ impl Spawner {
         wasm_bindgen_futures::spawn_local(future);
     }
 } 
-
-#[cfg(target_arch = "wasm32")]
-/// Parse the query string as returned by `web_sys::window()?.location().search()?` and get a
-/// specific key out of it.
-pub fn parse_url_query_string<'a>(query: &'a str, search_key: &str) -> Option<&'a str> {
-    let query_string = query.strip_prefix('?')?;
-
-    for pair in query_string.split('&') {
-        let mut pair = pair.split('=');
-        let key = pair.next()?;
-        let value = pair.next()?;
-
-        if key == search_key {
-            return Some(value);
-        }
-    }
-
-    None
-}

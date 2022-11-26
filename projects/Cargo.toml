@@ -1,0 +1,16 @@
+[package]
+name = "ufo3000-examples"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+description = "The Core"
+repository.workspace = true
+license.workspace = true
+
+[dependencies]
+log.workspace = true
+simple_logger.workspace = true
+
+[[example]]
+name = "dummy_example"
+path = "dummy_example/main.rs"
