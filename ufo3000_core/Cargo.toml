@@ -1,0 +1,8 @@
+[package]
+name = "ufo3000-core"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+description = "The Core!"
+repository.workspace = true
+license.workspace = true

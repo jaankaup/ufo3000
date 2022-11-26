@@ -1,16 +1,19 @@
 [workspace]
 resolver = "2"
-
 members = [
     "ufo3000_core",
-    "binaries",
-    "run_wasm",
-]
+}
 
-[profile.dev]
-opt-level = 1
-debug = false
+[workspace.package]
+edition = "2021"
+rust-version = "1.65"
+license = [MIT OR Apache-2.0] 
+version = "0.1.0"
+authors = ["jaankaup <janne.kauppinen4321@gmail.fi>"]
+repository = "https://github.com/jaankaup/ufo3000"
+exclude = []
 
-[profile.release]
-opt-level = 1
-debug = false
+[workspace.dependencies]
+wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="82e9dcf8f777db6e1b30731c7b3288cae2b4c64d" }
+winit = { version = "0.27" }
+bytemuck = { version = "1.4", features = ["derive"] }
