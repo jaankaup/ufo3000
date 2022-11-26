@@ -5,12 +5,12 @@ use {
     web_sys::{ImageBitmapRenderingContext, OffscreenCanvas},
     winit::platform::web::WindowExtWebSys,
     wasm_bindgen::JsCast,
-}
+};
 
-#[cfg(not(target_arch = "wasm32"))]
-use simple_logger::SimpleLogger;
-
-use log::LevelFilter;
+// #[cfg(not(target_arch = "wasm32"))]
+// use simple_logger::SimpleLogger;
+// 
+// use log::LevelFilter;
 
 use winit::{
     event::{Event, WindowEvent},
@@ -82,7 +82,7 @@ pub struct WGPUConfiguration {
     pub offscreen_canvas_setup: OffscreenCanvasSetup,
 }
 
-/// A trait to configure wgpu-rs engine.
+/// A trait for configure wgpu-rs engine.
 pub trait WGPUFeatures: Sized + 'static {
     fn optional_features() -> wgpu::Features {
         wgpu::Features::empty()
@@ -217,18 +217,6 @@ impl Loop for BasicLoop {
 pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'static str> {
 
     let title = title.to_owned();
-    // env_logger::init();
-
-    // #[cfg(not(target_arch = "wasm32"))]
-    // {
-    //     SimpleLogger::new()
-    //     .with_level(LevelFilter::Off)
-    //     .with_module_level("ufo3000_core", LevelFilter::Info)
-    //     .with_module_level("input", LevelFilter::Info)
-    //     .with_utc_timestamps()
-    //     .init()
-    //     .unwrap();
-    // }
 
     let event_loop = EventLoop::new();
     let mut builder = winit::window::WindowBuilder::new();

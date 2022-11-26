@@ -25,6 +25,8 @@ bytemuck = { version = "1.4", features = ["derive"] }
 log = "0.4"
 simple_logger = "1.16.0"
 instant = {version = "0.1.12", features = ["wasm-bindgen"]}
+pollster = "0.2"
+async-executor = "1.0"
 
 # wasm dependencies
 getrandom = { version = "0.2.7", features = ["js"] }
