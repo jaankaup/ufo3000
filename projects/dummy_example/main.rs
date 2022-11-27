@@ -1,11 +1,10 @@
 // use crate::features::*;
 mod dummy_features;
 use log::LevelFilter;
-use winit::dpi::PhysicalSize;
+//use winit::dpi::PhysicalSize;
 use ufo3000::logger::initialize_simple_logger;
-use ufo3000::input::*;
+use ufo3000::input::InputCache;
 use ufo3000::template::{
-    WGPUFeatures,
     WGPUConfiguration,
     Application,
     BasicLoop,
@@ -49,7 +48,7 @@ impl Application for DummyExampleApp {
     /// Render application.
     fn render(&mut self,
               device: &wgpu::Device,
-              queue: &mut wgpu::Queue,
+              _queue: &mut wgpu::Queue,
               surface: &wgpu::Surface,
               sc_desc: &wgpu::SurfaceConfiguration,
               _spawner: &Spawner) {
@@ -65,7 +64,7 @@ impl Application for DummyExampleApp {
             );
 
         // Create view.
-        let view = self.screen.surface_texture.as_ref().unwrap().texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let _view = self.screen.surface_texture.as_ref().unwrap().texture.create_view(&wgpu::TextureViewDescriptor::default());
 
         // Prepare rendering.
         self.screen.prepare_for_rendering();
@@ -74,7 +73,7 @@ impl Application for DummyExampleApp {
     }
 
     /// Handle user input.
-    fn input(&mut self, queue: &wgpu::Queue, input: &InputCache) {
+    fn input(&mut self, _queue: &wgpu::Queue, _input: &InputCache) {
 
     }
 
@@ -87,12 +86,12 @@ impl Application for DummyExampleApp {
     }
 
     /// Application update.
-    fn update(&mut self, device: &wgpu::Device, queue: &wgpu::Queue, input: &InputCache, _spawner: &Spawner) {
+    fn update(&mut self, _device: &wgpu::Device, _queue: &wgpu::Queue, _input: &InputCache, _spawner: &Spawner) {
 
     }
 
     /// Exit.
-    fn exit(&mut self, device: &wgpu::Device, queue: &wgpu::Queue, input: &InputCache, spawner: &Spawner) {
+    fn exit(&mut self, _device: &wgpu::Device, _queue: &wgpu::Queue, _input: &InputCache, _spawner: &Spawner) {
 
     }
 }
