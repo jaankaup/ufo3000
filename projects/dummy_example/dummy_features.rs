@@ -13,13 +13,12 @@ impl WGPUFeatures for DummyExampleFeatures {
 
     fn required_features() -> wgpu::Features {
 
-        // #[cfg(not(target_arch = "wasm32"))] {
         if cfg!(not(target_arch = "wasm32")) {
-            wgpu::Features::PUSH_CONSTANTS |
-            wgpu::Features::WRITE_TIMESTAMP_INSIDE_PASSES
+            wgpu::Features::empty()
+            // wgpu::Features::PUSH_CONSTANTS |
+            // wgpu::Features::WRITE_TIMESTAMP_INSIDE_PASSES
         }
         else {
-        // #[cfg(target_arch = "wasm32"))] {
             wgpu::Features::empty()
         }
     }
@@ -30,26 +29,14 @@ impl WGPUFeatures for DummyExampleFeatures {
         #[cfg(not(target_arch = "wasm32"))]
         {
         limits.max_compute_invocations_per_workgroup = 1024;
-        }
-
-        #[cfg(not(target_arch = "wasm32"))] 
-        {
         limits.max_compute_workgroup_size_x = 1024;
+        limits.max_push_constant_size = 4;
+        limits.max_push_constant_size = 4;
         }
 
         limits.max_storage_buffers_per_shader_stage = 10;
 
-        #[cfg(not(target_arch = "wasm32"))] 
-        {
-        limits.max_push_constant_size = 4; // Now useless.
-        }
-
-        #[cfg(not(target_arch = "wasm32"))] 
-        {
-        limits.max_push_constant_size = 4; // Now useless.
-        }
-
-        limits.max_storage_buffer_binding_size = 396441600; 
+        // limits.max_storage_buffer_binding_size = 396441600; 
 
         limits
     }
