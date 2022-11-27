@@ -1443,6 +1443,7 @@ dependencies = [
  "log",
  "simple_logger",
  "ufo3000_core",
+ "wgpu",
 ]
 
 [[package]]

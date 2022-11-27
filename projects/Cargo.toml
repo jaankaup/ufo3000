@@ -13,6 +13,7 @@ workspace = true
 [dependencies]
 log.workspace = true
 simple_logger.workspace = true
+wgpu.workspace = true
 
 [[example]]
 name = "dummy_example"
