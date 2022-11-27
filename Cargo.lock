@@ -1481,6 +1481,7 @@ dependencies = [
  "simple_logger",
  "ufo3000_core",
  "wgpu",
+ "winit",
 ]
 
 [[package]]

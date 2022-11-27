@@ -14,6 +14,7 @@ workspace = true
 log.workspace = true
 simple_logger.workspace = true
 wgpu.workspace = true
+winit.workspace = true
 
 [[example]]
 name = "dummy_example"

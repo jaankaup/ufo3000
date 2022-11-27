@@ -7,7 +7,7 @@ pub fn initialize_simple_logger(module_levels: &Vec<(String, LevelFilter)>) {
     #[cfg(not(target_arch = "wasm32"))]
     {
 
-        let mut simple_logger = SimpleLogger::new();
+        let mut simple_logger = SimpleLogger::new().with_level(LevelFilter::Off);
 
         for (s, l) in module_levels.iter() {
             simple_logger = simple_logger.with_module_level(s, *l);

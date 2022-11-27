@@ -61,7 +61,6 @@ impl ScreenTexture {
 
     /// This must be called so the texture can be actually rendered to the screen. Call this method
     /// after wgpu::Queue::submit.
-    //pub fn prepare_for_rendering(&mut self) {
     #[cfg(not(target_arch = "wasm32"))]
     pub fn prepare_for_rendering(&mut self) {
         if self.surface_texture.is_none() {
