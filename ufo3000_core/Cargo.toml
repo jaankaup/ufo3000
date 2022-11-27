@@ -15,5 +15,7 @@ pollster.workspace = true
 log.workspace = true
 simple_logger.workspace = true
 async-executor.workspace = true
+cgmath.workspace = true
+bytemuck.workspace = true
 
 [lib]
