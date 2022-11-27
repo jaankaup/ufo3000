@@ -28,6 +28,7 @@ instant = {version = "0.1.12", features = ["wasm-bindgen"]}
 pollster = "0.2"
 async-executor = "1.0"
 cgmath = "0.18"
+png = "0.16"
 
 # wasm dependencies
 getrandom = { version = "0.2.7", features = ["js"] }

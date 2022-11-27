@@ -17,5 +17,6 @@ simple_logger.workspace = true
 async-executor.workspace = true
 cgmath.workspace = true
 bytemuck.workspace = true
+png.workspace = true
 
 [lib]
