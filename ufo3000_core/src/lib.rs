@@ -6,3 +6,4 @@ pub mod buffer;
 pub mod misc;
 pub mod screen;
 pub mod texture;
+pub mod render_object;

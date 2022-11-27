@@ -14,6 +14,7 @@ use ufo3000::template::{
 use ufo3000::screen::ScreenTexture;
 use ufo3000::camera::Camera;
 use ufo3000::texture::Texture as ATexture;
+// use ufo3000::render_object::*;
 
 // TODO: drop renderpass if there is nothing to draw.
 
