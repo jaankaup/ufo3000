@@ -1,7 +1,5 @@
-// use crate::features::*;
-mod dummy_features;
+mod cube_features;
 use log::LevelFilter;
-//use winit::dpi::PhysicalSize;
 use ufo3000::logger::initialize_simple_logger;
 use ufo3000::input::InputCache;
 use ufo3000::template::{
@@ -14,17 +12,17 @@ use ufo3000::template::{
 use ufo3000::screen::ScreenTexture;
 use ufo3000::camera::Camera;
 use ufo3000::texture::Texture as ATexture;
-// use ufo3000::render_object::*;
+use ufo3000::render_object::create_render_pass;
 
 // TODO: drop renderpass if there is nothing to draw.
 
-struct DummyExampleApp {
+struct CubeApp {
     screen: ScreenTexture, 
     camera: Camera,
     render: bool,
 }
 
-impl Application for DummyExampleApp {
+impl Application for CubeApp {
 
     /// Initialize application.
     fn init(configuration: &WGPUConfiguration) -> Self {
@@ -42,14 +40,14 @@ impl Application for DummyExampleApp {
         Self {
             screen: ScreenTexture::init(&configuration.device, &configuration.sc_desc, true),
             camera: camera,
-            render: false,
+            render: true,
         }
     }
 
     /// Render application.
     fn render(&mut self,
               device: &wgpu::Device,
-              _queue: &mut wgpu::Queue,
+              queue: &mut wgpu::Queue,
               surface: &wgpu::Surface,
               sc_desc: &wgpu::SurfaceConfiguration,
               _spawner: &Spawner) {
@@ -64,7 +62,25 @@ impl Application for DummyExampleApp {
                 );
 
             // Create view.
-            let _view = self.screen.surface_texture.as_ref().unwrap().texture.create_view(&wgpu::TextureViewDescriptor::default());
+            let view = self.screen.surface_texture.as_ref().unwrap().texture.create_view(&wgpu::TextureViewDescriptor::default());
+
+            // If there is nothing to draw, this must be executed.
+            let mut cube_encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor { label: Some("Cube encoder") });
+            {
+                let _render_pass = create_render_pass(
+                    &mut cube_encoder,
+                    &view,
+                    self.screen.depth_texture.as_ref().unwrap(),
+                    true,
+                    &Some(wgpu::Color {
+                        r: 1.0,
+                        g: 0.0,
+                        b: 0.0,
+                        a: 1.0,
+                    })
+                    );
+            }
+            queue.submit(Some(cube_encoder.finish()));
 
             // Prepare rendering.
             self.screen.prepare_for_rendering();
@@ -104,6 +120,6 @@ fn main() {
     log::info!("Hekotus from dummy_example.");
 
     // Execute application.
-    run_loop::<DummyExampleApp, BasicLoop, dummy_features::DummyExampleFeatures>(); 
+    run_loop::<CubeApp, BasicLoop, cube_features::CubeFeatures>(); 
 
 }

@@ -261,7 +261,6 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
     let offscreen_canvas_setup = OffscreenCanvasSetup { offscreen_canvas, bitmap_renderer, };
 
     let backend = wgpu::util::backend_bits_from_env().unwrap_or(wgpu::Backends::PRIMARY);
-    //let backend = wgpu::Backends::GL;
     
     let power_preference = if let Ok(power_preference) = std::env::var("WGPU_POWER_PREF") {
         match power_preference.to_lowercase().as_str() {

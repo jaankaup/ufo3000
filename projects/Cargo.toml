@@ -19,3 +19,7 @@ winit.workspace = true
 [[example]]
 name = "dummy_example"
 path = "dummy_example/main.rs"
+
+[[example]]
+name = "cube"
+path = "cube/main.rs"

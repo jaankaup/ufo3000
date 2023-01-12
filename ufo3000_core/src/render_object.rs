@@ -27,9 +27,9 @@ impl_convert!{DrawIndirect}
 impl_convert!{DispatchIndirect}
 
 pub struct ComputeObject {
-    pub bind_group_layouts: Vec<wgpu::BindGroupLayout>,
+    pub bind_group_layouts: Vec<wgpu::BindGroupLayout>, // getter?
     pub pipeline: wgpu::ComputePipeline,
-    pub bind_group_layout_entries: Vec<Vec<wgpu::BindGroupLayoutEntry>> // TODO: remove?
+    pub bind_group_layout_entries: Vec<Vec<wgpu::BindGroupLayoutEntry>>
 }
 
 impl ComputeObject {
@@ -378,7 +378,7 @@ pub fn create_bind_group_layouts(device: &wgpu::Device, layout_entries: &Vec<Vec
                     entries: &e,
                     label: None,
                 }
-                ));
+        ));
     }
     bind_group_layouts
 }
@@ -396,10 +396,11 @@ pub fn create_bind_group_layouts(device: &wgpu::Device, layout_entries: &Vec<Vec
 //++ }
 
 // TODO: optional depth-texture.
-fn create_render_pass<'a>(encoder: &'a mut wgpu::CommandEncoder,
+pub fn create_render_pass<'a>(encoder: &'a mut wgpu::CommandEncoder,
                           view: &'a wgpu::TextureView,
                           depth_texture: &'a Texture,
-                          clear: bool) -> impl wgpu::util::RenderEncoder<'a> {
+                          clear: bool,
+                          clear_color: &Option<wgpu::Color>) -> impl wgpu::util::RenderEncoder<'a> {
 
     let render_pass = encoder.begin_render_pass(
             &wgpu::RenderPassDescriptor {
@@ -411,12 +412,13 @@ fn create_render_pass<'a>(encoder: &'a mut wgpu::CommandEncoder,
                             ops: wgpu::Operations {
                                 load: match clear {
                                     true => {
-                                        wgpu::LoadOp::Clear(wgpu::Color {
-                                            r: 0.0,
-                                            g: 0.0,
-                                            b: 0.0,
-                                            a: 1.0,
-                                        })
+                                        wgpu::LoadOp::Clear(clear_color.unwrap())
+                                        // wgpu::LoadOp::Clear(wgpu::Color {
+                                        //     r: 1.0,
+                                        //     g: 0.0,
+                                        //     b: 0.0,
+                                        //     a: 1.0,
+                                        // })
                                     }
                                     false => {
                                         wgpu::LoadOp::Load
@@ -454,7 +456,13 @@ pub fn draw_indirect(
                           encoder,
                           view,
                           depth_texture,
-                          clear
+                          clear,
+                          &Some(wgpu::Color {
+                              r: 1.0,
+                              g: 0.0,
+                              b: 0.0,
+                              a: 1.0,
+                          })
     );
     
     render_pass.set_pipeline(&pipeline);
@@ -486,7 +494,13 @@ pub fn draw(encoder: &mut wgpu::CommandEncoder,
                           encoder,
                           view,
                           depth_texture,
-                          clear
+                          clear,
+                          &Some(wgpu::Color {
+                              r: 1.0,
+                              g: 0.0,
+                              b: 0.0,
+                              a: 1.0,
+                          })
     );
     
     render_pass.set_pipeline(&pipeline);
