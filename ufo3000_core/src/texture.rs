@@ -1,18 +1,9 @@
 use crate::misc::Convert2Vec;
 use std::num::NonZeroU32;
 use bytemuck::Pod;
-//use std::mem;
-
-/// All possible texture types. TODO: Are these necessery?
-pub enum TextureType {
-    Diffuse,
-    Depth,
-}
 
 /// Texture.
-/// TODO: do we need texture_type?
 pub struct Texture {
-    pub texture_type: TextureType, 
     pub texture: wgpu::Texture,
     pub view: wgpu::TextureView,
     pub sampler: wgpu::Sampler,
@@ -25,7 +16,7 @@ impl Texture {
 
     pub const DEPTH_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Depth32Float;
 
-    /// Creates a depth texture.
+    /// Create a depth texture.
     pub fn create_depth_texture(device: &wgpu::Device, sc_desc: &wgpu::SurfaceConfiguration, label: Option<&str>) -> Self {
 
         let width = sc_desc.width; 
@@ -44,7 +35,8 @@ impl Texture {
             sample_count: 1,
             dimension: wgpu::TextureDimension::D2,
             format: Self::DEPTH_FORMAT,
-            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::RENDER_ATTACHMENT,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            //usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::RENDER_ATTACHMENT,
         };
         let texture = device.create_texture(&desc);
 
@@ -57,15 +49,11 @@ impl Texture {
             mag_filter: wgpu::FilterMode::Linear,
             min_filter: wgpu::FilterMode::Linear,
             mipmap_filter: wgpu::FilterMode::Nearest,
-            lod_min_clamp: -100.0,
-            lod_max_clamp: 100.0,
             compare: Some(wgpu::CompareFunction::Less),
             ..Default::default()
         });
 
-        let texture_type = TextureType::Depth;
-
-        Self { texture_type, texture, view, sampler, width, height, depth }
+        Self { texture, view, sampler, width, height, depth }
     }
 
     /// Creates a texture from a sequency of bytes (expects bytes to be in png format 'rgb'). Alpha value is set to 255.
@@ -78,7 +66,7 @@ impl Texture {
 
         #[cfg(feature = "texture_debug")]
         {
-            log::info!("Creating texture using 'jaankaup-core::Texture::create_from_bytes'.");
+            log::info!("Creating texture using 'ufo3000_core::Texture::create_from_bytes'.");
             log::info!("Label: {:?}.", match label { None => "None", Some(s) => s });
         }
 
@@ -182,7 +170,7 @@ impl Texture {
             array_layer_count: std::num::NonZeroU32::new(1),
         });
 
-        let texture_type = TextureType::Diffuse;
+        // let texture_type = TextureType::Diffuse;
 
         let width = texture_extent.width;
         let height = texture_extent.height;
@@ -195,7 +183,6 @@ impl Texture {
 
         Self {
 
-            texture_type, 
             texture,
             view,
             sampler,
@@ -238,7 +225,7 @@ impl Texture {
             mip_level_count: 1,
             sample_count: sample_count,
             dimension: wgpu::TextureDimension::D2,
-            format: sc_desc.format, //wgpu::TextureFormat::Rgba8UnormSrgb,
+            format: sc_desc.format,
             usage: wgpu::TextureUsages::TEXTURE_BINDING |
                    wgpu::TextureUsages::COPY_DST,
             label: None,
@@ -246,7 +233,7 @@ impl Texture {
 
         let view = texture.create_view(&wgpu::TextureViewDescriptor {
             label: None,
-            format: Some(sc_desc.format),// gpu::TextureFormat::Rgba8UnormSrgb,
+            format: Some(sc_desc.format),
             dimension: Some(wgpu::TextureViewDimension::D2),
             aspect: wgpu::TextureAspect::All,
             base_mip_level: 0,
@@ -255,13 +242,10 @@ impl Texture {
             array_layer_count: std::num::NonZeroU32::new(1),
         });
 
-        let texture_type = TextureType::Diffuse;
-
         let depth = 1;
 
         Self {
 
-            texture_type, 
             texture,
             view,
             sampler,
@@ -284,7 +268,7 @@ impl Texture {
             mipmap_filter: wgpu::FilterMode::Nearest,
             lod_min_clamp: -100.0,
             lod_max_clamp: 100.0,
-            compare: None, //Some(wgpu::CompareFunction::Always),
+            compare: None,
             ..Default::default()
         });
 
@@ -299,14 +283,14 @@ impl Texture {
             mip_level_count: 1,
             sample_count: 1, // this must always be 1
             dimension: wgpu::TextureDimension::D3,
-            format: *format, //wgpu::TextureFormat::Rgba8UnormSrgb,
+            format: *format,
             usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST | wgpu::TextureUsages::COPY_SRC,
             label: None,
         });
 
         let view = texture.create_view(&wgpu::TextureViewDescriptor {
             label: None, // TODO: add label to function parameter list
-            format: Some(*format),// wgpu::TextureFormat::Rgba8UnormSrgb,
+            format: Some(*format),
             dimension: Some(wgpu::TextureViewDimension::D3),
             aspect: wgpu::TextureAspect::All,
             base_mip_level: 0,
@@ -315,11 +299,8 @@ impl Texture {
             array_layer_count: std::num::NonZeroU32::new(1),
         });
 
-        let texture_type = TextureType::Diffuse;
-
         Self {
 
-            texture_type, 
             texture,
             view,
             sampler,
@@ -367,13 +348,11 @@ impl Texture {
         queue.submit(Some(encoder.finish()));
 
         let buffer_slice = staging_buffer.slice(..);
-        // let buffer_future = buffer_slice.map_async(wgpu::MapMode::Read, |_| ());
         buffer_slice.map_async(wgpu::MapMode::Read, |_| ());
         device.poll(wgpu::Maintain::Wait);
 
         let res: Vec<T>;
 
-        // buffer_future.await.expect("failed"); 
         let data = buffer_slice.get_mapped_range();
         res = Convert2Vec::convert(&data);
         res
@@ -384,7 +363,7 @@ impl Texture {
     pub fn create_texture_array<T: Pod>(
                 queue: &wgpu::Queue,
                 device: &wgpu::Device,
-                data: &[T], //bytemuck::cast_slice(&t)
+                data: &[T],
                 texture_format: wgpu::TextureFormat) -> Self {
 
         let sampler = device.create_sampler(&wgpu::SamplerDescriptor {
@@ -447,10 +426,7 @@ impl Texture {
             array_layer_count: std::num::NonZeroU32::new(1),
         });
 
-        let texture_type = TextureType::Diffuse;
-
         Self {
-            texture_type, 
             texture,
             view,
             sampler,

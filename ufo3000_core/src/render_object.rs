@@ -29,7 +29,7 @@ impl_convert!{DispatchIndirect}
 pub struct ComputeObject {
     pub bind_group_layouts: Vec<wgpu::BindGroupLayout>,
     pub pipeline: wgpu::ComputePipeline,
-    pub bind_group_layout_entries: Vec<Vec<wgpu::BindGroupLayoutEntry>>
+    pub bind_group_layout_entries: Vec<Vec<wgpu::BindGroupLayoutEntry>> // TODO: remove?
 }
 
 impl ComputeObject {
