@@ -36,6 +36,7 @@ impl Texture {
             dimension: wgpu::TextureDimension::D2,
             format: Self::DEPTH_FORMAT,
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            view_formats: &[],
             //usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::RENDER_ATTACHMENT,
         };
         let texture = device.create_texture(&desc);
@@ -133,6 +134,7 @@ impl Texture {
             dimension: wgpu::TextureDimension::D2,
             format: sc_desc.format, // wgpu::TextureFormat::Rgba8UnormSrgb,
             usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            view_formats: &[],
         });
 
         #[cfg(feature = "texture_debug")]
@@ -229,6 +231,7 @@ impl Texture {
             usage: wgpu::TextureUsages::TEXTURE_BINDING |
                    wgpu::TextureUsages::COPY_DST,
             label: None,
+            view_formats: &[],
         });
 
         let view = texture.create_view(&wgpu::TextureViewDescriptor {
@@ -286,6 +289,7 @@ impl Texture {
             format: *format,
             usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST | wgpu::TextureUsages::COPY_SRC,
             label: None,
+            view_formats: &[],
         });
 
         let view = texture.create_view(&wgpu::TextureViewDescriptor {
@@ -397,6 +401,7 @@ impl Texture {
             format: texture_format,
             usage: wgpu::TextureUsages::STORAGE_BINDING | wgpu::TextureUsages::COPY_DST,
             label: None,
+            view_formats: &[],
         });
 
         queue.write_texture(

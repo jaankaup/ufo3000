@@ -260,7 +260,8 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
     #[cfg(target_arch = "wasm32")]
     let offscreen_canvas_setup = OffscreenCanvasSetup { offscreen_canvas, bitmap_renderer, };
 
-    let backend = wgpu::util::backend_bits_from_env().unwrap_or(wgpu::Backends::PRIMARY);
+    let backends = wgpu::util::backend_bits_from_env().unwrap_or(wgpu::Backends::all());
+    let dx12_shader_compiler = wgpu::util::dx12_shader_compiler_from_env().unwrap_or_default();
     
     let power_preference = if let Ok(power_preference) = std::env::var("WGPU_POWER_PREF") {
         match power_preference.to_lowercase().as_str() {
@@ -272,7 +273,8 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
         wgpu::PowerPreference::HighPerformance
     };
     log::info!("power_preference = {:?}", power_preference);
-    let instance = wgpu::Instance::new(backend);
+    //let instance = wgpu::Instance::new(backend);
+    let instance = wgpu::Instance::new(wgpu::InstanceDescriptor { backends, dx12_shader_compiler, });
     let (size, surface) = unsafe {
 
         let size = window.inner_size();
@@ -286,7 +288,7 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
         (size, surface)
     };
 
-    let adapter = wgpu::util::initialize_adapter_from_env_or_default(&instance, backend, Some(&surface))
+    let adapter = wgpu::util::initialize_adapter_from_env_or_default(&instance, backends, Some(&surface))
         .await
         .expect("No suitable GPU adapters found on the system!");
 
