@@ -345,6 +345,8 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
         height: size.height,
         present_mode: wgpu::PresentMode::Fifo,
         alpha_mode: surface.get_capabilities(&adapter).alpha_modes[0],
+        view_formats: vec![wgpu::TextureFormat::Bgra8Unorm],
+        //view_formats: vec![wgpu::TextureFormat::Rgba8Unorm],
     };
 
     surface.configure(&device, &sc_desc);
