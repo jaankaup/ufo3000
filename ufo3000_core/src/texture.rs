@@ -167,9 +167,9 @@ impl Texture {
             dimension: Some(wgpu::TextureViewDimension::D2),
             aspect: wgpu::TextureAspect::All,
             base_mip_level: 0,
-            mip_level_count: std::num::NonZeroU32::new(1),
+            mip_level_count: Some(1),
             base_array_layer: 0,
-            array_layer_count: std::num::NonZeroU32::new(1),
+            array_layer_count: Some(1),
         });
 
         // let texture_type = TextureType::Diffuse;
@@ -240,9 +240,9 @@ impl Texture {
             dimension: Some(wgpu::TextureViewDimension::D2),
             aspect: wgpu::TextureAspect::All,
             base_mip_level: 0,
-            mip_level_count: std::num::NonZeroU32::new(1),
+            mip_level_count: Some(1),
             base_array_layer: 0,
-            array_layer_count: std::num::NonZeroU32::new(1),
+            array_layer_count: Some(1),
         });
 
         let depth = 1;
@@ -298,9 +298,9 @@ impl Texture {
             dimension: Some(wgpu::TextureViewDimension::D3),
             aspect: wgpu::TextureAspect::All,
             base_mip_level: 0,
-            mip_level_count: std::num::NonZeroU32::new(1),
+            mip_level_count: Some(1),
             base_array_layer: 0,
-            array_layer_count: std::num::NonZeroU32::new(1),
+            array_layer_count: Some(1),
         });
 
         Self {
@@ -426,9 +426,9 @@ impl Texture {
             dimension: Some(wgpu::TextureViewDimension::D1),
             aspect: wgpu::TextureAspect::default(),
             base_mip_level: 0,
-            mip_level_count: std::num::NonZeroU32::new(1),
+            mip_level_count: Some(1),
             base_array_layer: 0,
-            array_layer_count: std::num::NonZeroU32::new(1),
+            array_layer_count: Some(1),
         });
 
         Self {
