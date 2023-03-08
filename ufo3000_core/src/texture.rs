@@ -1,5 +1,5 @@
 use crate::misc::Convert2Vec;
-use std::num::NonZeroU32;
+// use std::num::NonZeroU32;
 use bytemuck::Pod;
 
 /// Texture.
@@ -155,8 +155,8 @@ impl Texture {
             },
             wgpu::ImageDataLayout {
                 offset: 0,
-                bytes_per_row: Some(NonZeroU32::new(width * 4).unwrap()), // now only 4 bits per pixel is supported,
-                rows_per_image: Some(NonZeroU32::new(height).unwrap()),
+                bytes_per_row: Some(width * 4), // now only 4 bits per pixel is supported,
+                rows_per_image: Some(height),
             },
             texture_extent,
         );
@@ -339,8 +339,8 @@ impl Texture {
                 buffer: &staging_buffer,
                 layout: wgpu::ImageDataLayout {
                     offset: 0,
-                    bytes_per_row: Some(NonZeroU32::new(self.width * 4).unwrap()), 
-                    rows_per_image: Some(NonZeroU32::new(self.depth).unwrap()),
+                    bytes_per_row: Some(self.width * 4), 
+                    rows_per_image: Some(self.depth),
                 },
             },
             wgpu::Extent3d {
@@ -414,8 +414,8 @@ impl Texture {
             bytemuck::cast_slice(&data),
             wgpu::ImageDataLayout {
                 offset: 0,
-                bytes_per_row: Some(NonZeroU32::new(std::mem::size_of::<T>() as u32 * width).unwrap()),
-                rows_per_image: Some(NonZeroU32::new(1).unwrap()),
+                bytes_per_row: Some(std::mem::size_of::<T>() as u32 * width),
+                rows_per_image: Some(1),
             },
             texture_extent,
         );
