@@ -178,7 +178,7 @@ impl Loop for BasicLoop {
                 }
 
                 let close_application = input.key_state(&Key::Q);
-                if !close_application.is_none() {
+                if close_application.is_some() {
                     *control_flow = ControlFlow::Exit;
                 }
             }
@@ -352,15 +352,15 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
     surface.configure(&device, &sc_desc);
 
     Ok(WGPUConfiguration {
-            window: window,
-            event_loop: event_loop,
-            instance: instance,
-            size: size,
-            surface: surface,
-            adapter: adapter,
-            device: device,
-            queue: queue,
-            sc_desc: sc_desc,
+            window,
+            event_loop,
+            instance,
+            size,
+            surface,
+            adapter,
+            device,
+            queue,
+            sc_desc,
             #[cfg(target_arch = "wasm32")]
             offscreen_canvas_setup,
     })

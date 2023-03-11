@@ -86,7 +86,7 @@ impl Camera {
             self.focal_distance = value;
         }
         // self.update_camera(&queue);
-        self.update_ray_camera(&queue);
+        self.update_ray_camera(queue);
     }
 
     pub fn get_focal_distance(&self) -> f32 {
@@ -102,9 +102,9 @@ impl Camera {
     }
 
     pub fn move_forward(&mut self, amount: f32, queue: &wgpu::Queue) {
-        self.pos = self.pos + self.view * amount;
-        self.update_camera(&queue);
-        self.update_ray_camera(&queue);
+        self.pos += self.view * amount;
+        self.update_camera(queue);
+        self.update_ray_camera(queue);
     }
     pub fn set_lookat(&mut self, at: [f32; 3], queue: &wgpu::Queue) {
         self.view = Vector3::new(
@@ -112,8 +112,8 @@ impl Camera {
             at[1] - self.pos.y, // - at[1],
             at[2] - self.pos.z, // - at[2],
         ).normalize_to(1.0);
-        self.update_camera(&queue);
-        self.update_ray_camera(&queue);
+        self.update_camera(queue);
+        self.update_ray_camera(queue);
     }
 
     /// Get a reference to camera uniform buffer. Creates the buffer is it doens't already exist.
@@ -129,19 +129,19 @@ impl Camera {
             };
 
             self.camera_buffer = Some(buffer_from_data::<CameraUniform>(
-                &device,
+                device,
                 &[camera_uniform],
                 wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
                 None)
             );
         }
 
-        &self.camera_buffer.as_ref().unwrap()
+        self.camera_buffer.as_ref().unwrap()
     }
     
     // TODO: update uniform?
     pub fn resize(&mut self, aspect_width: f32, aspect_height: f32) {
-        self.aspect = aspect_width / aspect_height as f32;
+        self.aspect = aspect_width / aspect_height;
     }
 
     /// Get a reference to ray tracing camera uniform buffer. Creates the buffer is it doesn't already exist.
@@ -165,14 +165,14 @@ impl Camera {
             };
 
             self.ray_camera_buffer = Some(buffer_from_data::<RayCameraUniform>(
-                &device,
+                device,
                 &[ray_camera_uniform],
                 wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
                 None)
             );
         }
 
-        &self.ray_camera_buffer.as_ref().unwrap()
+        self.ray_camera_buffer.as_ref().unwrap()
     }
 
     /// TODO: something better.
@@ -193,17 +193,17 @@ impl Camera {
 
         Self {
             pos: start_position.into(),
-            view: view, //Vector3::new(0.0, 0.0, -1.0).normalize(),
+            view, //Vector3::new(0.0, 0.0, -1.0).normalize(),
             up: cgmath::Vector3::unit_y(),
-            aspect: aspect_width / aspect_height as f32,
+            aspect: aspect_width / aspect_height,
             fov: (1.485387,0.785387).into(),
             //fov: (45.0,45.0).into(),
             znear: 0.01,
             zfar: 1000.0,
             movement_sensitivity: 0.003,
             rotation_sensitivity: 0.05,
-            pitch: pitch, // -80.5,
-            yaw: yaw, // -50.5,
+            pitch, // -80.5,
+            yaw, // -50.5,
             aperture_radius: 0.01,
             focal_distance: 1.0,
             camera_buffer: None,
@@ -249,15 +249,15 @@ impl Camera {
 
         // 1/10 speed if left shift is down.
         let mut movement_factor = 1.0;
-        if !left_shift.is_none() { movement_factor = 0.1; }
+        if left_shift.is_some() { movement_factor = 0.1; }
 
         // Calculate the amount of movement based on user input.
-        if !state_forward.is_none() { movement += movement_factor * time_delta_milli_f32 * self.view; }
-        if !state_backward.is_none() { movement -= movement_factor * time_delta_milli_f32 * self.view; }
-        if !state_right.is_none() { movement += movement_factor * time_delta_milli_f32 * right; }
-        if !state_left.is_none() { movement -= movement_factor * time_delta_milli_f32 * right; }
-        if !state_up.is_none() { movement += movement_factor * time_delta_milli_f32 * self.up; }
-        if !state_down.is_none() { movement -= movement_factor * time_delta_milli_f32 * self.up; }
+        if state_forward.is_some() { movement += movement_factor * time_delta_milli_f32 * self.view; }
+        if state_backward.is_some() { movement -= movement_factor * time_delta_milli_f32 * self.view; }
+        if state_right.is_some() { movement += movement_factor * time_delta_milli_f32 * right; }
+        if state_left.is_some() { movement -= movement_factor * time_delta_milli_f32 * right; }
+        if state_up.is_some() { movement += movement_factor * time_delta_milli_f32 * self.up; }
+        if state_down.is_some() { movement -= movement_factor * time_delta_milli_f32 * self.up; }
 
         let new_pos = self.movement_sensitivity * movement + self.pos;
         // Update the camera position.
@@ -283,9 +283,9 @@ impl Camera {
         if let Some(InputState::Down(_,_)) = left_mouse_button {
 
             self.pitch = clamp(
-                self.pitch + (self.rotation_sensitivity as f32 * (md.y * (-1.0)) as f32),
+                self.pitch + (self.rotation_sensitivity * (md.y * (-1.0)) as f32),
                 -89.0,89.0);
-            self.yaw = self.yaw + self.rotation_sensitivity * md.x as f32 ;
+            self.yaw += self.rotation_sensitivity * md.x as f32 ;
 
             self.view = Vector3::new(
                 self.pitch.to_radians().cos() * self.yaw.to_radians().cos(),
@@ -296,12 +296,12 @@ impl Camera {
 
         // Update the camera uniform and the camera uniform buffer.
         // TODO: refactor.
-        self.update_camera(&queue);
-        self.update_ray_camera(&queue);
+        self.update_camera(queue);
+        self.update_ray_camera(queue);
     }
 
     fn update_camera(&self, queue: &wgpu::Queue) {
-        if !self.camera_buffer.is_none() {
+        if self.camera_buffer.is_some() {
 
             // Create camera uniform data. TODO: refactor.
             let camera_uniform = CameraUniform {
@@ -309,14 +309,14 @@ impl Camera {
                 pos: Vector4::new(self.pos.x, self.pos.y, self.pos.z, 1.0),
             };
             queue.write_buffer(
-                &self.camera_buffer.as_ref().unwrap(),
+                self.camera_buffer.as_ref().unwrap(),
                 0,
                 bytemuck::cast_slice(&[camera_uniform]));
         }
     }
 
     fn update_ray_camera(&self, queue: &wgpu::Queue) {
-        if !self.ray_camera_buffer.is_none() {
+        if self.ray_camera_buffer.is_some() {
 
             // Create ray camera uniform data.
             let ray_camera_uniform = RayCameraUniform {
@@ -331,7 +331,7 @@ impl Camera {
             };
 
             queue.write_buffer(
-                &self.ray_camera_buffer.as_ref().unwrap(),
+                self.ray_camera_buffer.as_ref().unwrap(),
                 0,
                 bytemuck::cast_slice(&[ray_camera_uniform]));
         }
@@ -351,8 +351,8 @@ impl Camera {
     pub fn build_view_matrix(&self) -> cgmath::Matrix4<f32> {
         let pos3 = Point3::new(self.pos.x, self.pos.y,self.pos.z);
         let view3 = Point3::new(self.view.x + pos3.x, self.view.y + pos3.y, self.view.z + pos3.z);
-        let view = cgmath::Matrix4::look_at_rh(pos3, view3, self.up);
-        view
+        
+        cgmath::Matrix4::look_at_rh(pos3, view3, self.up)
     }
 
 }

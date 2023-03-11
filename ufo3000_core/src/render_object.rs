@@ -49,9 +49,9 @@ impl ComputeObject {
 
         // Create pipeline layout.
         let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-            label: label,
+            label,
             bind_group_layouts: &bind_group_layouts.iter().collect::<Vec<_>>(),
-            push_constant_ranges: &push_constant_ranges.unwrap_or_else(|| vec![]),
+            push_constant_ranges: &push_constant_ranges.unwrap_or_default(),
             //push_constant_ranges: &[wgpu::PushConstantRange {
             //    stages: wgpu::ShaderStages::COMPUTE,
             //    range: 0..4,
@@ -61,15 +61,15 @@ impl ComputeObject {
 
         // Create the pipeline.
         let pipeline = device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
-            label: label,
+            label,
             layout: Some(&pipeline_layout),
-            module: &wgsl_module,
-            entry_point: entry_point //"main",
+            module: wgsl_module,
+            entry_point //"main",
         });
 
         Self {
-            bind_group_layouts: bind_group_layouts,
-            pipeline: pipeline,
+            bind_group_layouts,
+            pipeline,
             bind_group_layout_entries: bind_group_layout_entries.to_vec(),
         }
     }
@@ -83,11 +83,11 @@ impl ComputeObject {
                     label: wgpu::Label) {
 
         let mut pass = encoder.begin_compute_pass(
-            &wgpu::ComputePassDescriptor { label: label}
+            &wgpu::ComputePassDescriptor { label}
         );
         pass.set_pipeline(&self.pipeline);
         for (e, bgs) in bind_groups.iter().enumerate() {
-            pass.set_bind_group(e as u32, &bgs, &[]);
+            pass.set_bind_group(e as u32, bgs, &[]);
         }
         pass.dispatch_workgroups(x, y, z)
     }
@@ -99,11 +99,11 @@ impl ComputeObject {
                     label: wgpu::Label) -> wgpu::ComputePass<'a> {
 
             let mut pass = encoder.begin_compute_pass(
-                &wgpu::ComputePassDescriptor { label: label}
+                &wgpu::ComputePassDescriptor { label}
             );
             pass.set_pipeline(&self.pipeline);
             for (e, bgs) in bind_groups.iter().enumerate() {
-                pass.set_bind_group(e as u32, &bgs, &[]);
+                pass.set_bind_group(e as u32, bgs, &[]);
             }
             pass
     }
@@ -134,12 +134,12 @@ impl ComputeObject {
                     label: wgpu::Label) {
 
         let mut pass = encoder.begin_compute_pass(
-            &wgpu::ComputePassDescriptor { label: label}
+            &wgpu::ComputePassDescriptor { label}
         );
         pass.set_pipeline(&self.pipeline);
         pass.set_push_constants(push_constant_offset, bytemuck::cast_slice(&[push_constant_data]));
         for (e, bgs) in bind_groups.iter().enumerate() {
-            pass.set_bind_group(e as u32, &bgs, &[]);
+            pass.set_bind_group(e as u32, bgs, &[]);
         }
         pass.dispatch_workgroups(x, y, z);
     }
@@ -152,11 +152,11 @@ impl ComputeObject {
                              label: wgpu::Label) {
 
         let mut pass = encoder.begin_compute_pass(
-            &wgpu::ComputePassDescriptor { label: label}
+            &wgpu::ComputePassDescriptor { label}
         );
         pass.set_pipeline(&self.pipeline);
         for (e, bgs) in bind_groups.iter().enumerate() {
-            pass.set_bind_group(e as u32, &bgs, &[]);
+            pass.set_bind_group(e as u32, bgs, &[]);
         }
         pass.dispatch_workgroups_indirect(indirect_buffer, offset);
     }
@@ -187,7 +187,7 @@ impl RenderObject {
 
         // Create pipeline layout.
         let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-            label: label,
+            label,
             bind_group_layouts: &bind_group_layouts.iter().collect::<Vec<_>>(), // &[&bind_group_layout],
             push_constant_ranges: &[],
         });
@@ -197,7 +197,7 @@ impl RenderObject {
             label: None,
             layout: Some(&pipeline_layout),
             vertex: wgpu::VertexState {
-                module: &wgsl_module,
+                module: wgsl_module,
                 entry_point: "vs_main",
                 buffers: &[
                     wgpu::VertexBufferLayout {
@@ -208,7 +208,7 @@ impl RenderObject {
             },
             primitive: wgpu::PrimitiveState {
                 //topology: wgpu::PrimitiveTopology::TriangleList,
-                topology: topology,
+                topology,
                 strip_index_format: None,
                 front_face: if ccw { wgpu::FrontFace::Ccw } else { wgpu::FrontFace::Cw },
                 cull_mode: None, //Some(wgpu::Face::Back),
@@ -239,7 +239,7 @@ impl RenderObject {
                 alpha_to_coverage_enabled: false,
             },
             fragment: Some(wgpu::FragmentState {
-                module: &wgsl_module,
+                module: wgsl_module,
                 entry_point: "fs_main",
                 targets: &[Some(wgpu::ColorTargetState {
                     format: sc_desc.format,
@@ -264,8 +264,8 @@ impl RenderObject {
         });
 
         Self {
-            bind_group_layouts: bind_group_layouts,
-            pipeline: pipeline,
+            bind_group_layouts,
+            pipeline,
             bind_group_layout_entries: bind_group_layout_entries.to_vec(),
         }
     }
@@ -321,7 +321,7 @@ pub fn create_vb_descriptor(formats: &Vec<wgpu::VertexFormat>) -> (u64, Vec<wgpu
                 shader_location: i as u32, 
             }
         );
-        stride = stride + size;
+        stride += size;
     }
 
     (stride, attribute_descriptors)
@@ -375,7 +375,7 @@ pub fn create_bind_group_layouts(device: &wgpu::Device, layout_entries: &Vec<Vec
     for e in layout_entries.iter() {
         bind_group_layouts.push(device.create_bind_group_layout(
                 &wgpu::BindGroupLayoutDescriptor {
-                    entries: &e,
+                    entries: e,
                     label: None,
                 }
         ));
@@ -407,7 +407,7 @@ pub fn create_render_pass<'a>(encoder: &'a mut wgpu::CommandEncoder,
                 label: Some("Render pass descriptor"),
                 color_attachments: &[
                     Some(wgpu::RenderPassColorAttachment {
-                            view: &view,
+                            view,
                             resolve_target: None,
                             ops: wgpu::Operations {
                                 load: match clear {
@@ -465,11 +465,11 @@ pub fn draw_indirect(
                           })
     );
     
-    render_pass.set_pipeline(&pipeline);
+    render_pass.set_pipeline(pipeline);
 
     // Set bind groups.
     for (e, bgs) in bind_groups.iter().enumerate() {
-        render_pass.set_bind_group(e as u32, &bgs, &[]);
+        render_pass.set_bind_group(e as u32, bgs, &[]);
     }
     
     // Set vertex buffer.
@@ -484,7 +484,7 @@ pub fn draw_indirect(
 pub fn draw(encoder: &mut wgpu::CommandEncoder,
             view: &wgpu::TextureView,
             depth_texture: &Texture,
-            bind_groups: &Vec<wgpu::BindGroup>,
+            bind_groups: &[wgpu::BindGroup], // &Vec<wgpu::BindGroup>,
             pipeline: &wgpu::RenderPipeline,
             draw_buffer: &wgpu::Buffer,
             range: Range<u32>,
@@ -503,11 +503,11 @@ pub fn draw(encoder: &mut wgpu::CommandEncoder,
                           })
     );
     
-    render_pass.set_pipeline(&pipeline);
+    render_pass.set_pipeline(pipeline);
 
     // Set bind groups.
     for (e, bgs) in bind_groups.iter().enumerate() {
-        render_pass.set_bind_group(e as u32, &bgs, &[]);
+        render_pass.set_bind_group(e as u32, bgs, &[]);
     }
     
     // Set vertex buffer.

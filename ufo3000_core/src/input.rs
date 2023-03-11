@@ -112,7 +112,7 @@ impl MouseButtons {
             ev::MouseButton::Left => {
                 match &mut self.left.state {
                     Some(s) => {
-                        s.update(&state, time_now);
+                        s.update(state, time_now);
                         //log::info!("Left mouse : {:?}", self.left.state.as_ref());
                     }
                     None => {
@@ -124,7 +124,7 @@ impl MouseButtons {
             ev::MouseButton::Middle => {
                 match &mut self.middle.state {
                     Some(s) => {
-                        s.update(&state, time_now);
+                        s.update(state, time_now);
                         //log::info!("Middle mouse : {:?}", self.middle.state.as_ref());
                     }
                     None => {
@@ -136,7 +136,7 @@ impl MouseButtons {
             ev::MouseButton::Right => {
                 match &mut self.right.state {
                     Some(s) => {
-                        s.update(&state, time_now);
+                        s.update(state, time_now);
                         //log::info!("Right mouse : {:?}", self.right.state.as_ref());
                     }
                     None => {
@@ -151,17 +151,17 @@ impl MouseButtons {
 
     /// Get the state of the left mouse button.
     pub fn get_left(&self) -> Option<InputState> {
-        self.left.state.clone()
+        self.left.state
     }
 
     /// Get the state of the middle mouse button.
     pub fn get_middle(&self) -> Option<InputState> {
-        self.middle.state.clone()
+        self.middle.state
     }
     
     /// Get the state of the right mouse button.
     pub fn get_right(&self) -> Option<InputState> {
-        self.right.state.clone()
+        self.right.state
     }
 }
 
@@ -226,14 +226,14 @@ impl InputCache {
         let timer = instant::Instant::now();
 
         Self {
-            keyboard: keyboard,
-            mouse_buttons: mouse_buttons,
-            mouse_position: mouse_position,
+            keyboard,
+            mouse_buttons,
+            mouse_position,
             mouse_delta: PhysicalPosition::<f64>::new(0.0, 0.0),
             scroll_delta: 0.0,
             time_now: 0,
             time_delta: 0,
-            timer: timer,
+            timer,
             mouse_moved: false,
         }
     }
@@ -324,18 +324,15 @@ impl InputCache {
     }
     /// Get the InputState of keyboard key.
     pub fn key_state(&self, key: &Key) -> Option<InputState> {
-        if let Some(val) = self.keyboard.get(key) {
-            Some(val.clone())
-        }
-        else { None }
+        self.keyboard.get(key).copied()
     }
 
     /// Get the InputState of mouse button.
     pub fn mouse_button_state(&self, button: &ev::MouseButton) -> Option<InputState> {
         match button {
-            ev::MouseButton::Left => { self.mouse_buttons.left.state.clone() } 
-            ev::MouseButton::Middle => { self.mouse_buttons.middle.state.clone() } 
-            ev::MouseButton::Right => { self.mouse_buttons.right.state.clone() } 
+            ev::MouseButton::Left => { self.mouse_buttons.left.state } 
+            ev::MouseButton::Middle => { self.mouse_buttons.middle.state } 
+            ev::MouseButton::Right => { self.mouse_buttons.right.state } 
             _ => None
         }
     }
@@ -430,14 +427,14 @@ impl KeyboardManager {
 
             match state_key {
                 Some(InputState::Pressed(_)) => {
-                    let delta = (input.get_time_delta() as f64 / 1000000.0) as f64;
+                    let delta = input.get_time_delta() as f64 / 1000000.0;
                     v.0 = delta;
                 }
                 Some(InputState::Down(_, _)) => {
-                    let delta = (input.get_time_delta() as f64 / 1000000.0) as f64;
-                    v.0 = v.0 + delta;
+                    let delta = input.get_time_delta() as f64 / 1000000.0;
+                    v.0 += delta;
                     if v.0 > v.1 {
-                        v.0 = v.0 - v.1;
+                        v.0 -= v.1;
                         result = true;
                     }
                 },
@@ -447,6 +444,6 @@ impl KeyboardManager {
                 _ => { }
             }
         }
-        return result;
+        result
     }
 }

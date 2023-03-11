@@ -39,7 +39,7 @@ impl Application for CubeApp {
 
         Self {
             screen: ScreenTexture::init(&configuration.device, &configuration.sc_desc, true),
-            camera: camera,
+            camera,
             render: true,
         }
     }
@@ -56,9 +56,9 @@ impl Application for CubeApp {
 
             // Acquire screen.
             self.screen.acquire_screen_texture(
-                &device,
-                &sc_desc,
-                &surface
+                device,
+                sc_desc,
+                surface
                 );
 
             // Create view.
@@ -97,7 +97,7 @@ impl Application for CubeApp {
     fn resize(&mut self, device: &wgpu::Device, sc_desc: &wgpu::SurfaceConfiguration, _new_size: winit::dpi::PhysicalSize<u32>) {
 
         // TODO: add this functionality to the Screen.
-        self.screen.depth_texture = Some(ATexture::create_depth_texture(&device, &sc_desc, Some("depth-texture")));
+        self.screen.depth_texture = Some(ATexture::create_depth_texture(device, sc_desc, Some("depth-texture")));
         self.camera.resize(sc_desc.width as f32, sc_desc.height as f32);
     }
 

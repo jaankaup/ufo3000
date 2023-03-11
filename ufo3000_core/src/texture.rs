@@ -24,12 +24,12 @@ impl Texture {
         let depth = 1; 
 
         let size = wgpu::Extent3d {
-            width: width,
-            height: height,
+            width,
+            height,
             depth_or_array_layers: depth,
         };
         let desc = wgpu::TextureDescriptor {
-            label: label,
+            label,
             size,
             mip_level_count: 1,
             sample_count: 1,
@@ -121,16 +121,16 @@ impl Texture {
         }
 
         let texture_extent = wgpu::Extent3d {
-            width: width,
-            height: height,
+            width,
+            height,
             depth_or_array_layers: 1,
         };
 
         let texture = device.create_texture(&wgpu::TextureDescriptor {
-            label: label,
+            label,
             size: texture_extent,
             mip_level_count: 1,
-            sample_count: sample_count,
+            sample_count,
             dimension: wgpu::TextureDimension::D2,
             format: sc_desc.format, // wgpu::TextureFormat::Rgba8UnormSrgb,
             usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
@@ -217,15 +217,15 @@ impl Texture {
         });
 
         let texture_extent = wgpu::Extent3d {
-            width: width,
-            height: height,
+            width,
+            height,
             depth_or_array_layers: 1,
         };
 
         let texture = device.create_texture(&wgpu::TextureDescriptor {
             size: texture_extent,
             mip_level_count: 1,
-            sample_count: sample_count,
+            sample_count,
             dimension: wgpu::TextureDimension::D2,
             format: sc_desc.format,
             usage: wgpu::TextureUsages::TEXTURE_BINDING |
@@ -276,8 +276,8 @@ impl Texture {
         });
 
         let texture_extent = wgpu::Extent3d {
-            width: width,
-            height: height,
+            width,
+            height,
             depth_or_array_layers: depth,
         };
 
@@ -321,7 +321,7 @@ impl Texture {
         
         let staging_buffer = device.create_buffer(&wgpu::BufferDescriptor {
             label: None,
-            size: size, 
+            size, 
             usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST,
             mapped_at_creation: false,
         });
@@ -388,8 +388,8 @@ impl Texture {
         let depth: u32 = 1;
 
         let texture_extent = wgpu::Extent3d {
-            width: width,
-            height: height,
+            width,
+            height,
             depth_or_array_layers: depth,
         };
 
@@ -411,7 +411,7 @@ impl Texture {
                 origin: wgpu::Origin3d::ZERO,
                 aspect: wgpu::TextureAspect::All,
             },
-            bytemuck::cast_slice(&data),
+            bytemuck::cast_slice(data),
             wgpu::ImageDataLayout {
                 offset: 0,
                 bytes_per_row: Some(std::mem::size_of::<T>() as u32 * width),

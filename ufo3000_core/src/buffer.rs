@@ -11,9 +11,9 @@ pub fn buffer_from_data<T: Pod>(
     -> wgpu::Buffer {
         device.create_buffer_init(
             &wgpu::util::BufferInitDescriptor {
-                label: label,
-                contents: bytemuck::cast_slice(&t),
-                usage: usage,
+                label,
+                contents: bytemuck::cast_slice(t),
+                usage,
             }
         )
 }
@@ -59,7 +59,7 @@ pub fn to_vec<T: Convert2Vec + std::clone::Clone + bytemuck::Pod + std::marker::
     encoder.copy_buffer_to_buffer(buffer, 0, &staging_buffer, 0, copy_size);
     queue.submit(Some(encoder.finish()));
 
-    let res: Vec<T>;
+    
 
     let buffer_slice = staging_buffer.slice(..);
     //++ let (sender, receiver) = futures_intrusive::channel::shared::oneshot_channel();
@@ -70,7 +70,7 @@ pub fn to_vec<T: Convert2Vec + std::clone::Clone + bytemuck::Pod + std::marker::
 
     // Wasm version crashes: DOMException.getMappedRange: Buffer not mapped.
     let data = buffer_slice.get_mapped_range().to_vec();
-    res = Convert2Vec::convert(&data);
+    let res: Vec<T> = Convert2Vec::convert(&data);
     drop(data);
     staging_buffer.unmap();
 
