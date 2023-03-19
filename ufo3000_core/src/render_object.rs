@@ -484,7 +484,7 @@ pub fn draw_indirect(
 pub fn draw(encoder: &mut wgpu::CommandEncoder,
             view: &wgpu::TextureView,
             depth_texture: &Texture,
-            bind_groups: &[wgpu::BindGroup], // &Vec<wgpu::BindGroup>,
+            bind_groups: &[wgpu::BindGroup],
             pipeline: &wgpu::RenderPipeline,
             draw_buffer: &wgpu::Buffer,
             range: Range<u32>,
