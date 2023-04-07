@@ -4,6 +4,7 @@ members = [
     "ufo3000_core",
     "projects",
     "misc_stuff",
+    "runwasm",
 ]
 
 [workspace.package]
@@ -20,9 +21,8 @@ package = "ufo3000_core"
 path = "./ufo3000_core"
 
 [workspace.dependencies]
-wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="f43b706e17fa36cf3af2a6be3cb7cc82303dd5fc" }
-#wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="110e62aed255777ac635a504ec81029483065be8" }
-winit = { version = "0.27" }
+wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="dd64343f942ff519f980a2adc02fa60f3a7b72a3" }
+winit = { version = "0.27.1" }
 bytemuck = { version = "1.4", features = ["derive"] }
 log = "0.4"
 simple_logger = "1.16.0"
@@ -31,13 +31,15 @@ pollster = "0.2"
 async-executor = "1.0"
 cgmath = "0.18"
 png = "0.16"
+cargo-run-wasm = "0.3.2"
 
 # wasm dependencies
 getrandom = { version = "0.2.7", features = ["js"] }
-web-sys = "0.3.60"
-js-sys = "0.3.60"
-wasm-bindgen = "0.2.83"
-wasm-bindgen-futures = "0.4.33"
+web-sys = "0.3.61"
+js-sys = "0.3.61"
+wasm-bindgen = "0.2.84"
+wasm-bindgen-test = "0.3"
+wasm-bindgen-futures = "0.4.34"
 wasm-timer = "0.2.5"
-console_error_panic_hook = "0.1.6"
-console_log = "0.1.2"
+console_error_panic_hook = "0.1.7"
+console_log = "0.2"

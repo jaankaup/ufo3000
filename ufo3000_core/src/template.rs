@@ -50,6 +50,7 @@ pub trait Application: Sized + 'static {
     fn exit(&mut self, device: &wgpu::Device, queue: &wgpu::Queue, input: &InputCache, spawner: &Spawner);
 }
 
+/// Canvas for web-platform. 
 #[cfg(target_arch = "wasm32")]
 pub struct OffscreenCanvasSetup {
     pub offscreen_canvas: OffscreenCanvas,
@@ -273,7 +274,6 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
         wgpu::PowerPreference::HighPerformance
     };
     log::info!("power_preference = {:?}", power_preference);
-    //let instance = wgpu::Instance::new(backend);
     let instance = wgpu::Instance::new(wgpu::InstanceDescriptor { backends, dx12_shader_compiler, });
     let (size, surface) = unsafe {
 
@@ -346,7 +346,6 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
         present_mode: wgpu::PresentMode::Fifo,
         alpha_mode: surface.get_capabilities(&adapter).alpha_modes[0],
         view_formats: vec![wgpu::TextureFormat::Bgra8Unorm],
-        //view_formats: vec![wgpu::TextureFormat::Rgba8Unorm],
     };
 
     surface.configure(&device, &sc_desc);

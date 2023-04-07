@@ -14,6 +14,9 @@ use ufo3000::camera::Camera;
 use ufo3000::texture::Texture as ATexture;
 use ufo3000::render_object::create_render_pass;
 
+#[cfg(target_arch = "wasm32")]
+use ufo3000::template::OffscreenCanvasSetup;
+
 // TODO: drop renderpass if there is nothing to draw.
 
 struct CubeApp {
@@ -50,6 +53,8 @@ impl Application for CubeApp {
               queue: &mut wgpu::Queue,
               surface: &wgpu::Surface,
               sc_desc: &wgpu::SurfaceConfiguration,
+              #[cfg(target_arch = "wasm32")]
+              offscreen_canvas_setup: &OffscreenCanvasSetup,
               _spawner: &Spawner) {
 
         if self.render {
@@ -83,7 +88,11 @@ impl Application for CubeApp {
             queue.submit(Some(cube_encoder.finish()));
 
             // Prepare rendering.
+            #[cfg(not(target_arch = "wasm32"))]
             self.screen.prepare_for_rendering();
+
+            #[cfg(target_arch = "wasm32")]
+            self.screen.prepare_for_rendering(offscreen_canvas_setup);
 
         } // render
     }

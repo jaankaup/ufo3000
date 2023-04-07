@@ -14,3 +14,8 @@ might use.
 - [ ] Radix Sort
 - [ ] Sphere Tracer
 - [ ] Space filling curves (Morton code, Hilbert, Scan line, Rosenberg-Strong, ...)
+
+##
+
+Setup wasmbindgen
+$ cargo install wasm-bindgen-cli@0.2.81 --force
