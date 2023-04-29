@@ -21,7 +21,8 @@ package = "ufo3000_core"
 path = "./ufo3000_core"
 
 [workspace.dependencies]
-wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="dd64343f942ff519f980a2adc02fa60f3a7b72a3" }
+wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="4220a42139c7aefd29ddd39727fd535dc7665de6" }
+#wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="dd64343f942ff519f980a2adc02fa60f3a7b72a3" }
 winit = { version = "0.27.1" }
 bytemuck = { version = "1.4", features = ["derive"] }
 log = "0.4"

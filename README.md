@@ -17,5 +17,6 @@ might use.
 
 ##
 
-Setup wasmbindgen
-$ cargo install wasm-bindgen-cli@0.2.81 --force
+Setup wasmbindgen (two alternatives)
+$ cargo install wasm-bindgen-cli@0.2.84 --force
+$ cargo install -f wasm-bindgen-cli --version 0.2.84
