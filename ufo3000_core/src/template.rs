@@ -288,7 +288,8 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
         (size, surface)
     };
 
-    let adapter = wgpu::util::initialize_adapter_from_env_or_default(&instance, backends, Some(&surface))
+    //let adapter = wgpu::util::initialize_adapter_from_env_or_default(&instance, backends, Some(&surface))
+    let adapter = wgpu::util::initialize_adapter_from_env_or_default(&instance, Some(&surface))
         .await
         .expect("No suitable GPU adapters found on the system!");
 
