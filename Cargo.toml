@@ -21,7 +21,7 @@ package = "ufo3000_core"
 path = "./ufo3000_core"
 
 [workspace.dependencies]
-wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="51e3105faedd208bc3e01716ea1fbdbff3f048f3" }
+wgpu = { git = "https://github.com/gfx-rs/wgpu", rev="caad255737fc68c53ac1108b69acc2de27b3851d" }
 winit = { version = "0.28.6" }
 bytemuck = { version = "1.4", features = ["derive"] }
 log = "0.4"
@@ -35,9 +35,9 @@ cargo-run-wasm = "0.3.2"
 
 # wasm dependencies
 getrandom = { version = "0.2.7", features = ["js"] }
-web-sys = "0.3.61"
-js-sys = "0.3.61"
-wasm-bindgen = "0.2.84"
+web-sys = "0.3.64"
+js-sys = "0.3.64"
+wasm-bindgen = "0.2.87"
 wasm-bindgen-test = "0.3"
 wasm-bindgen-futures = "0.4.34"
 wasm-timer = "0.2.5"

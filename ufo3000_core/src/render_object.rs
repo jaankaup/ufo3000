@@ -1,4 +1,5 @@
 // use std::borrow::Cow::Borrowed;
+use wgpu::StoreOp;
 use crate::impl_convert;
 use crate::misc::Convert2Vec;
 use bytemuck::{Pod, Zeroable};
@@ -83,7 +84,10 @@ impl ComputeObject {
                     label: wgpu::Label) {
 
         let mut pass = encoder.begin_compute_pass(
-            &wgpu::ComputePassDescriptor { label}
+            &wgpu::ComputePassDescriptor {
+                label,
+                timestamp_writes: None,
+            }
         );
         pass.set_pipeline(&self.pipeline);
         for (e, bgs) in bind_groups.iter().enumerate() {
@@ -99,7 +103,10 @@ impl ComputeObject {
                     label: wgpu::Label) -> wgpu::ComputePass<'a> {
 
             let mut pass = encoder.begin_compute_pass(
-                &wgpu::ComputePassDescriptor { label}
+                &wgpu::ComputePassDescriptor {
+                    label,
+                    timestamp_writes: None,
+                }
             );
             pass.set_pipeline(&self.pipeline);
             for (e, bgs) in bind_groups.iter().enumerate() {
@@ -134,7 +141,10 @@ impl ComputeObject {
                     label: wgpu::Label) {
 
         let mut pass = encoder.begin_compute_pass(
-            &wgpu::ComputePassDescriptor { label}
+                &wgpu::ComputePassDescriptor {
+                    label,
+                    timestamp_writes: None,
+                }
         );
         pass.set_pipeline(&self.pipeline);
         pass.set_push_constants(push_constant_offset, bytemuck::cast_slice(&[push_constant_data]));
@@ -152,7 +162,10 @@ impl ComputeObject {
                              label: wgpu::Label) {
 
         let mut pass = encoder.begin_compute_pass(
-            &wgpu::ComputePassDescriptor { label}
+                &wgpu::ComputePassDescriptor {
+                    label,
+                    timestamp_writes: None,
+                }
         );
         pass.set_pipeline(&self.pipeline);
         for (e, bgs) in bind_groups.iter().enumerate() {
@@ -413,29 +426,25 @@ pub fn create_render_pass<'a>(encoder: &'a mut wgpu::CommandEncoder,
                                 load: match clear {
                                     true => {
                                         wgpu::LoadOp::Clear(clear_color.unwrap())
-                                        // wgpu::LoadOp::Clear(wgpu::Color {
-                                        //     r: 1.0,
-                                        //     g: 0.0,
-                                        //     b: 0.0,
-                                        //     a: 1.0,
-                                        // })
                                     }
                                     false => {
                                         wgpu::LoadOp::Load
                                     }
                                 },
-                                store: true,
+                                store: StoreOp::Store,
                             },
-                    })
+                    }),
                 ],
             depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
                 view: &depth_texture.view,
                 depth_ops: Some(wgpu::Operations {
                         load: match clear { true => wgpu::LoadOp::Clear(1.0), false => wgpu::LoadOp::Load },
-                        store: true,
+                        store: StoreOp::Store,
                 }),
                 stencil_ops: None,
                 }),
+            timestamp_writes: None,
+            occlusion_query_set: None,
     });
 
     render_pass

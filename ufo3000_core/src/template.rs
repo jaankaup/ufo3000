@@ -263,6 +263,7 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
 
     let backends = wgpu::util::backend_bits_from_env().unwrap_or(wgpu::Backends::all());
     let dx12_shader_compiler = wgpu::util::dx12_shader_compiler_from_env().unwrap_or_default();
+    let gles_minor_version = wgpu::util::gles_minor_version_from_env().unwrap_or_default();
     
     let power_preference = if let Ok(power_preference) = std::env::var("WGPU_POWER_PREF") {
         match power_preference.to_lowercase().as_str() {
@@ -274,7 +275,7 @@ pub async fn setup<P: WGPUFeatures>(title: &str) -> Result<WGPUConfiguration, &'
         wgpu::PowerPreference::HighPerformance
     };
     log::info!("power_preference = {:?}", power_preference);
-    let instance = wgpu::Instance::new(wgpu::InstanceDescriptor { backends, dx12_shader_compiler, });
+    let instance = wgpu::Instance::new(wgpu::InstanceDescriptor { backends, dx12_shader_compiler, gles_minor_version });
     let (size, surface) = unsafe {
 
         let size = window.inner_size();
